@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const LiveLocation = () => {
@@ -30,6 +30,24 @@ const LiveLocation = () => {
       });
   };
 
+  const fetchUpdatedLocation = () => {
+    fetch(`http://localhost:5000/getlocation`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch location from backend');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Fetched updated location:', data);
+        setLatitude(data.latitude);
+        setLongitude(data.longitude);
+      })
+      .catch((error) => {
+        console.error('Error fetching location:', error);
+      });
+  };
+
   const startTracking = () => {
     if (navigator.geolocation) {
       const id = setInterval(() => {
@@ -44,7 +62,7 @@ const LiveLocation = () => {
             console.error('Error fetching location:', error);
           }
         );
-      }, 1000); // Send location every 1 second
+      }, 1000);
       setIntervalId(id);
       setIsTracking(true);
     } else {
@@ -59,6 +77,14 @@ const LiveLocation = () => {
       setIsTracking(false);
     }
   };
+
+  useEffect(() => {
+    const fetchId = setInterval(() => {
+      fetchUpdatedLocation();
+    }, 1000);
+
+    return () => clearInterval(fetchId);
+  }, []);
 
   const handleRedirect = () => {
     navigate('/map');

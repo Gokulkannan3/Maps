@@ -13,7 +13,7 @@ const customIcon = new L.Icon({
 });
 
 const Map = () => {
-  const [position, setPosition] = useState([13.0843, 80.2705]);
+  const [position, setPosition] = useState([13.0418, 80.2049]);
 
   useEffect(() => {
     const fetchLocation = () => {
