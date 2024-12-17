@@ -14,7 +14,15 @@ const customIcon = new L.Icon({
 });
 
 const Map = () => {
-  const [position, setPosition] = useState([localStorage.getItem('latitude'), localStorage.getItem('longitude')]);
+  const [position, setPosition] = useState(() => {
+    const savedLat = localStorage.getItem('latitude');
+    const savedLng = localStorage.getItem('longitude');
+    if (savedLat && savedLng) {
+      return [parseFloat(savedLat), parseFloat(savedLng)];
+    } else {
+      return [0, 0]; 
+    }
+  });  
 
   useEffect(() => {
     const savedLat = localStorage.getItem('latitude');
