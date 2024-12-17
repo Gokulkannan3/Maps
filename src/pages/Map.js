@@ -43,18 +43,21 @@ const Map = () => {
   }, []);
 
   return (
-    <div className="map-wrapper">
-      <MapContainer center={position} zoom={13} scrollWheelZoom={false} className="leaflet-container">
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Marker position={position} icon={customIcon}>
-          <Popup>
-            Latitude: {position[0]} <br /> Longitude: {position[1]}
-          </Popup>
-        </Marker>
-      </MapContainer>
-      <div className="location-info">
-        <p>Latitude: {position[0]}</p>
-        <p>Longitude: {position[1]}</p>
+    <div>
+      <h1 className='heading'>BUS 57 LIVE LOCATION</h1>
+      <div className="map-wrapper">
+        <MapContainer center={position} zoom={13} scrollWheelZoom={false} className="leaflet-container">
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          <Marker position={position} icon={customIcon}>
+            <Popup>
+              Latitude: {position[0]} <br /> Longitude: {position[1]}
+            </Popup>
+          </Marker>
+        </MapContainer>
+        <div className="location-info">
+          <p>Latitude: {position[0]}</p>
+          <p>Longitude: {position[1]}</p>
+        </div>
       </div>
     </div>
   );
