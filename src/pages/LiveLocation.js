@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const LiveLocation = () => {
@@ -8,46 +8,43 @@ const LiveLocation = () => {
   const [intervalId, setIntervalId] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const savedLat = localStorage.getItem('latitude');
-    const savedLng = localStorage.getItem('longitude');
-    if (savedLat && savedLng) {
-      setLatitude(savedLat);
-      setLongitude(savedLng);
-    }
-  }, []);
-
   const sendLocationToBackend = (latitude, longitude) => {
-    fetch(`https://maps-backend-oi5f.onrender.com/location`, {
+    fetch(`https://maps-backend-69fc.onrender.com/location`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ latitude, longitude }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Response from backend:', data);
-        if (data.latitude && data.longitude) {
-          setLatitude(data.latitude);
-          setLongitude(data.longitude);
-          localStorage.setItem('latitude', data.latitude);
-          localStorage.setItem('longitude', data.longitude);
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to send location to backend');
         }
+        return response.json();
+      })
+      .then(() => {
+        console.log('Location sent successfully:', { latitude, longitude });
       })
       .catch((error) => {
-        console.error('Error:', error);
+        console.error('Error sending location to backend:', error);
       });
   };
 
   const startTracking = () => {
     if (navigator.geolocation) {
       const id = setInterval(() => {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const { latitude, longitude } = position.coords;
-          sendLocationToBackend(latitude, longitude);
-        });
-      }, 1000);
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setLatitude(latitude);
+            setLongitude(longitude);
+            sendLocationToBackend(latitude, longitude);
+          },
+          (error) => {
+            console.error('Error fetching location:', error);
+          }
+        );
+      }, 1000); // Send location every 1 second
       setIntervalId(id);
       setIsTracking(true);
     } else {

@@ -16,9 +16,14 @@ const Map = () => {
   const [position, setPosition] = useState([13.0843, 80.2705]);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      fetch(`https://maps-backend-oi5f.onrender.com/location`)
-        .then((response) => response.json())
+    const fetchLocation = () => {
+      fetch('https://maps-backend-69fc.onrender.com/getlocation/')
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch location');
+          }
+          return response.json();
+        })
         .then((data) => {
           if (data.latitude && data.longitude) {
             const newPosition = [parseFloat(data.latitude), parseFloat(data.longitude)];
@@ -28,7 +33,10 @@ const Map = () => {
         .catch((error) => {
           console.error('Error fetching location:', error);
         });
-    }, 1000);
+    };
+
+    fetchLocation();
+    const intervalId = setInterval(fetchLocation, 1000);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -43,6 +51,10 @@ const Map = () => {
           </Popup>
         </Marker>
       </MapContainer>
+      <div className="location-info">
+        <p>Latitude: {position[0]}</p>
+        <p>Longitude: {position[1]}</p>
+      </div>
     </div>
   );
 };
