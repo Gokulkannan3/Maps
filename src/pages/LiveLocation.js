@@ -5,7 +5,7 @@ const LiveLocation = () => {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [isTracking, setIsTracking] = useState(false);
-  const [watchId, setWatchId] = useState(null);
+  const [intervalId, setIntervalId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,18 +17,38 @@ const LiveLocation = () => {
     }
   }, []);
 
+  const sendLocationToBackend = (latitude, longitude) => {
+    fetch(`https://maps-backend-oi5f.onrender.com/location`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ latitude, longitude }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Response from backend:', data);
+        if (data.latitude && data.longitude) {
+          setLatitude(data.latitude);
+          setLongitude(data.longitude);
+          localStorage.setItem('latitude', data.latitude);
+          localStorage.setItem('longitude', data.longitude);
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  };
+
   const startTracking = () => {
     if (navigator.geolocation) {
-      const id = navigator.geolocation.watchPosition((position) => {
-        const { latitude, longitude } = position.coords;
-        setLatitude(latitude);
-        setLongitude(longitude);
-        
-        // Store latitude and longitude in localStorage
-        localStorage.setItem('latitude', latitude);
-        localStorage.setItem('longitude', longitude);
-      });
-      setWatchId(id);
+      const id = setInterval(() => {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const { latitude, longitude } = position.coords;
+          sendLocationToBackend(latitude, longitude);
+        });
+      }, 1000);
+      setIntervalId(id);
       setIsTracking(true);
     } else {
       alert('Geolocation is not supported by this browser.');
@@ -36,15 +56,15 @@ const LiveLocation = () => {
   };
 
   const stopTracking = () => {
-    if (watchId) {
-      navigator.geolocation.clearWatch(watchId);
-      setWatchId(null);
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(null);
       setIsTracking(false);
     }
   };
 
   const handleRedirect = () => {
-    navigate('/map');  // Directly navigate to the map page
+    navigate('/map');
   };
 
   return (

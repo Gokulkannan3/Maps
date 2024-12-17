@@ -3,9 +3,8 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import "leaflet-routing-machine";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
-import './LiveLocation.css'; // Assuming the required CSS file
+import './LiveLocation.css';
 
-// Custom icon
 const customIcon = new L.Icon({
   iconUrl: 'https://cdn-icons-png.flaticon.com/512/25/25694.png',
   iconSize: [20, 20],
@@ -14,38 +13,36 @@ const customIcon = new L.Icon({
 });
 
 const Map = () => {
-  const [position, setPosition] = useState(() => {
-    const savedLat = localStorage.getItem('latitude');
-    const savedLng = localStorage.getItem('longitude');
-    if (savedLat && savedLng) {
-      return [parseFloat(savedLat), parseFloat(savedLng)];
-    } else {
-      return [0, 0]; 
-    }
-  });  
+  const [position, setPosition] = useState([13.0843, 80.2705]);
 
   useEffect(() => {
-    const savedLat = localStorage.getItem('latitude');
-    const savedLng = localStorage.getItem('longitude');
-    console.log(savedLat, savedLng);
+    const intervalId = setInterval(() => {
+      fetch(`https://maps-backend-oi5f.onrender.com/location`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.latitude && data.longitude) {
+            const newPosition = [parseFloat(data.latitude), parseFloat(data.longitude)];
+            setPosition(newPosition);
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching location:', error);
+        });
+    }, 1000);
 
-    if (savedLat && savedLng) {
-      setPosition([parseFloat(savedLat), parseFloat(savedLng)]);
-    }
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
     <div className="map-wrapper">
-      <div className="App">
-        <MapContainer center={position} zoom={13} scrollWheelZoom={false} className="leaflet-container">
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          <Marker position={position} icon={customIcon}>
-            <Popup>
-              Latitude: {position[0]} <br /> Longitude: {position[1]}
-            </Popup>
-          </Marker>
-        </MapContainer>
-      </div>
+      <MapContainer center={position} zoom={13} scrollWheelZoom={false} className="leaflet-container">
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <Marker position={position} icon={customIcon}>
+          <Popup>
+            Latitude: {position[0]} <br /> Longitude: {position[1]}
+          </Popup>
+        </Marker>
+      </MapContainer>
     </div>
   );
 };

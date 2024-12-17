@@ -13,6 +13,7 @@
 
 .map-wrapper {
   position: relative;
+  margin-top: 100px;
 }
 
 @media screen and (min-device-width: 1080px) and (max-device-width: 1920px) {
@@ -26,7 +27,7 @@
 }
 
 
-@media screen and (min-device-width:330px) and (max-device-width:900px){
+/* @media screen and (min-device-width:330px) and (max-device-width:900px){
   .leaflet-container {
     width: 300px !important;
     height: 500px !important;
@@ -36,4 +37,4 @@
     margin-left: -60px !important;
     border: 2px solid black;
   }
-}
+} */
