@@ -4,10 +4,11 @@ import L from 'leaflet';
 import "leaflet-routing-machine";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import './LiveLocation.css';
+import busimage from '../images/bus57.png';
 
 const customIcon = new L.Icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/25/25694.png',
-  iconSize: [20, 20],
+  iconUrl: busimage,
+  iconSize: [35, 35],
   iconAnchor: [10, 10],
   popupAnchor: [0, -10],
 });

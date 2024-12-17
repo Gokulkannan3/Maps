@@ -31,7 +31,7 @@ const LiveLocation = () => {
   };
 
   const fetchUpdatedLocation = () => {
-    fetch(`http://localhost:5000/getlocation`)
+    fetch(`https://maps-backend-69fc.onrender.com/getlocation`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Failed to fetch location from backend');
