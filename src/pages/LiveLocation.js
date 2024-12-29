@@ -9,7 +9,7 @@ const LiveLocation = () => {
   const navigate = useNavigate();
 
   const sendLocationToBackend = (latitude, longitude) => {
-    fetch(`https://maps-backend-69fc.onrender.com/location`, {
+    fetch(`http://localhost:5000/location`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
